@@ -36,7 +36,7 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
 # pantry-tracker
 
-Website Link: [pantry-tracker-hm4h0h2si-carrie-yangs-projects-ecaa264c.vercel.app](https://pantry-tracker-lyart.vercel.app/)
+Website Link: https://pantry-tracker-lyart.vercel.app/
 
 Allows you to track your pantry items
 
