@@ -12,16 +12,11 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db } from "./firebase";
-import { Button } from '@mui/material';
-
+import { Button } from "@mui/material";
 
 export default function Home() {
-  const [items, setItems] = useState([
-    // {name: 'Coffee', price: 4.95},
-    // {name: 'movie', price: 24.95},
-    // {name: 'Candy', price: 7.95}
-  ]);
-  const [newItem, setNewItem] = useState({ name: "", price: "" });
+  const [items, setItems] = useState([]);
+  const [newItem, setNewItem] = useState({ name: "", price: "", quantity: "" });
   const [total, setTotal] = useState(0);
   const [editingItem, setEditingItem] = useState(null);
   const [search, setSearch] = useState("");
@@ -29,21 +24,27 @@ export default function Home() {
   // Add item to database
   const addItem = async (e) => {
     e.preventDefault();
-    if (newItem.name !== "" && newItem.price !== "") {
+    if (
+      newItem.name !== "" &&
+      newItem.price !== "" &&
+      newItem.quantity !== ""
+    ) {
       if (editingItem) {
         const itemRef = doc(db, "items", editingItem.id);
         await updateDoc(itemRef, {
           name: newItem.name.trim(),
           price: newItem.price,
+          quantity: newItem.quantity,
         });
         setEditingItem(null);
       } else {
         await addDoc(collection(db, "items"), {
           name: newItem.name.trim(),
           price: newItem.price,
+          quantity: newItem.quantity,
         });
       }
-      setNewItem({ name: "", price: "" });
+      setNewItem({ name: "", price: "", quantity: "" });
     }
   };
 
@@ -62,7 +63,7 @@ export default function Home() {
 
       const calculateTotal = () => {
         const totalPrice = filteredItems.reduce(
-          (sum, item) => sum + parseFloat(item.price),
+          (sum, item) => sum + parseFloat(item.price) * parseInt(item.quantity),
           0
         );
         setTotal(totalPrice);
@@ -75,7 +76,7 @@ export default function Home() {
   // Edit items from database
   const startEditing = (item) => {
     setEditingItem(item);
-    setNewItem({ name: item.name, price: item.price });
+    setNewItem({ name: item.name, price: item.price, quantity: item.quantity });
   };
 
   // Delete items from database
@@ -122,9 +123,18 @@ export default function Home() {
               onChange={(e) =>
                 setNewItem({ ...newItem, price: e.target.value })
               }
-              className="col-span-2 p-3 border"
+              className="col-span-1 p-3 border"
               type="number"
               placeholder="Enter $"
+            />
+            <input
+              value={newItem.quantity}
+              onChange={(e) =>
+                setNewItem({ ...newItem, quantity: e.target.value })
+              }
+              className="col-span-1 p-3 border"
+              type="number"
+              placeholder="Enter Quantity"
             />
             <Button
               onClick={addItem}
@@ -153,6 +163,10 @@ export default function Home() {
                   <span className="capitalize">${item.price}</span>
                 </div>
                 <div className="flex">
+                  <button className="p-4 border-l-2 border-slate-900  w-18 flex items-center">
+                    <span className="mr-1">Qty:</span>
+                    <span>{item.quantity}</span>
+                  </button>
                   <button
                     onClick={() => startEditing(item)}
                     className="p-4 border-l-2 border-slate-900 hover:bg-slate-900 w-16"
